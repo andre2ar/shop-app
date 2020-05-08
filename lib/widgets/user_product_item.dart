@@ -27,7 +27,9 @@ class UserProductItem extends StatelessWidget {
             ),
             IconButton(
               icon: Icon(Icons.delete),
-              onPressed: () {},
+              onPressed: () {
+                Navigator.of(context).pushNamed(EditProductScreen.route);
+              },
               color: Theme.of(context).errorColor,
             ),
           ],
