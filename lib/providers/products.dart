@@ -20,6 +20,32 @@ class Products with ChangeNotifier {
     return _items.firstWhere((product) => product.id == id);
   }
 
+  Future<void> fetchAndSetProducts() async {
+    const url = 'https://flutterstore-42eae.firebaseio.com/products.json';
+
+    try {
+      final response = await http.get(url);
+      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+
+      final List<Product> loadedProducts = [];
+      extractedData.forEach((prodId, prodData) {
+        loadedProducts.add(Product(
+            id: prodId,
+            title: prodData['title'],
+            description: prodData['description'],
+            price: prodData['price'],
+            isFavourite: prodData['isFavourite'],
+            imageUrl: prodData['imageUrl']));
+      });
+
+      _items = loadedProducts;
+    } catch (e) {
+      throw (e);
+    }
+
+    notifyListeners();
+  }
+
   Future<void> addProduct(Product product) async {
     const url = 'https://flutterstore-42eae.firebaseio.com/products.json';
 
