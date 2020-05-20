@@ -25,13 +25,14 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> toggleFavouritesStatus() async {
+  Future<void> toggleFavouritesStatus(String token) async {
     final oldStatus = isFavourite;
 
     isFavourite = !isFavourite;
     notifyListeners();
 
-    final url = 'https://flutterstore-42eae.firebaseio.com/products/$id.json';
+    final url =
+        'https://flutterstore-42eae.firebaseio.com/products/$id.json?auth=$token';
     try {
       final response = await http.patch(
         url,

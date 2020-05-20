@@ -20,35 +20,40 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => Products(),
+          create: (context) => Auth(),
+        ),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          update: (context, auth, previousProducts) => Products(auth.token,
+              previousProducts == null ? [] : previousProducts.items),
+          create: (BuildContext context) {},
+        ),
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          update: (context, auth, previousOrders) => Orders(
+              auth.token, previousOrders == null ? [] : previousOrders.orders),
+          create: (BuildContext context) {},
         ),
         ChangeNotifierProvider(
           create: (context) => Cart(),
         ),
-        ChangeNotifierProvider(
-          create: (context) => Orders(),
-        ),
-        ChangeNotifierProvider(
-          create: (context) => Auth(),
-        )
       ],
-      child: MaterialApp(
-        title: 'MyShop',
-        theme: ThemeData(
-          primarySwatch: Colors.purple,
-          accentColor: Colors.deepOrange,
-          fontFamily: 'Lato',
+      child: Consumer<Auth>(
+        builder: (ctx, auth, _) => MaterialApp(
+          title: 'MyShop',
+          theme: ThemeData(
+            primarySwatch: Colors.purple,
+            accentColor: Colors.deepOrange,
+            fontFamily: 'Lato',
+          ),
+          home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          routes: {
+            ProductsOverviewScreen.route: (context) => ProductsOverviewScreen(),
+            ProductDetailScreen.route: (context) => ProductDetailScreen(),
+            CartScreen.route: (context) => CartScreen(),
+            OrdersScreen.route: (context) => OrdersScreen(),
+            UserProductsScreen.route: (context) => UserProductsScreen(),
+            EditProductScreen.route: (context) => EditProductScreen(),
+          },
         ),
-        initialRoute: '/',
-        routes: {
-          '/': (context) => AuthScreen(),
-          ProductsOverviewScreen.route: (context) => ProductsOverviewScreen(),
-          ProductDetailScreen.route: (context) => ProductDetailScreen(),
-          CartScreen.route: (context) => CartScreen(),
-          OrdersScreen.route: (context) => OrdersScreen(),
-          UserProductsScreen.route: (context) => UserProductsScreen(),
-          EditProductScreen.route: (context) => EditProductScreen(),
-        },
       ),
     );
   }
